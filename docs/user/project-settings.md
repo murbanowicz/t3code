@@ -33,3 +33,21 @@ upstream.
 T3 Code only pulls when it can fast-forward and the checkout has no changed files, untracked files,
 or local commits. It skips checkouts on another branch or without an upstream. If a checkout has
 local work, resolve it yourself before automatic pulls can resume.
+
+## Choose where worktrees are created
+
+By default, T3 Code creates each worktree thread in its own data directory, at
+`<T3 home>/worktrees/<repository>/<branch>`. Tooling that resolves configuration by walking up
+from the working directory — direnv, nix, mise, devcontainers, and most monorepo tooling — does
+not find that location, and some machines need worktrees on a particular drive.
+
+To place them somewhere else, set **Worktree location** in a project's settings to an absolute
+path. New worktrees for that project are then created at `<location>/<branch>`. Pointing it at
+`~/code/myrepo.worktrees`, for example, gives the sibling layout other Git clients use.
+
+The path must be absolute; `~/` is expanded on the machine that runs the server. The setting
+applies to every checkout in the project group and to every way a worktree thread starts,
+including pull requests opened as threads and threads started from mobile.
+
+Leave the field empty to go back to the default location. Changing it never moves worktrees that
+already exist — they stay where they were created, and their diffs keep working.

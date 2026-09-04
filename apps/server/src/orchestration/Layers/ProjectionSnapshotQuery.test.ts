@@ -373,6 +373,7 @@ projectionSnapshotLayer("ProjectionSnapshotQuery", (it) => {
             model: "gpt-5-codex",
           },
           autoPull: false,
+          worktreeRoot: null,
           faviconPath: null,
           projectIcon: null,
           scripts: [
@@ -499,6 +500,7 @@ projectionSnapshotLayer("ProjectionSnapshotQuery", (it) => {
             model: "gpt-5-codex",
           },
           autoPull: false,
+          worktreeRoot: null,
           faviconPath: null,
           projectIcon: null,
           scripts: [

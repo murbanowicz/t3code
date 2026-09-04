@@ -392,6 +392,7 @@ function mapProjectShellRow(
     defaultModelSelection: row.defaultModelSelection,
     defaultThreadEnvMode: row.defaultThreadEnvMode,
     autoPull: row.autoPull === 1,
+    worktreeRoot: row.worktreeRoot,
     faviconPath: row.faviconPath ?? null,
     projectIcon: row.projectIcon ?? null,
     scripts: row.scripts,
@@ -529,6 +530,7 @@ const makeProjectionSnapshotQuery = Effect.gen(function* () {
           default_model_selection_json AS "defaultModelSelection",
           default_thread_env_mode AS "defaultThreadEnvMode",
           auto_pull AS "autoPull",
+          worktree_root AS "worktreeRoot",
           favicon_path AS "faviconPath",
           project_icon_json AS "projectIcon",
           scripts_json AS "scripts",
@@ -537,6 +539,18 @@ const makeProjectionSnapshotQuery = Effect.gen(function* () {
           deleted_at AS "deletedAt"
         FROM projection_projects
         ORDER BY created_at ASC, project_id ASC
+      `,
+  });
+
+  const listActiveProjectWorktreeRootRows = SqlSchema.findAll({
+    Request: Schema.Void,
+    Result: Schema.Struct({ worktreeRoot: Schema.String }),
+    execute: () =>
+      sql`
+        SELECT DISTINCT worktree_root AS "worktreeRoot"
+        FROM projection_projects
+        WHERE deleted_at IS NULL
+          AND worktree_root IS NOT NULL
       `,
   });
 
@@ -1080,6 +1094,7 @@ const makeProjectionSnapshotQuery = Effect.gen(function* () {
           default_model_selection_json AS "defaultModelSelection",
           default_thread_env_mode AS "defaultThreadEnvMode",
           auto_pull AS "autoPull",
+          worktree_root AS "worktreeRoot",
           favicon_path AS "faviconPath",
           project_icon_json AS "projectIcon",
           scripts_json AS "scripts",
@@ -1106,6 +1121,7 @@ const makeProjectionSnapshotQuery = Effect.gen(function* () {
           default_model_selection_json AS "defaultModelSelection",
           default_thread_env_mode AS "defaultThreadEnvMode",
           auto_pull AS "autoPull",
+          worktree_root AS "worktreeRoot",
           favicon_path AS "faviconPath",
           project_icon_json AS "projectIcon",
           scripts_json AS "scripts",
@@ -2207,6 +2223,7 @@ pending_approval_requests AS (
                 defaultModelSelection: row.defaultModelSelection,
                 defaultThreadEnvMode: row.defaultThreadEnvMode,
                 autoPull: row.autoPull === 1,
+                worktreeRoot: row.worktreeRoot,
                 faviconPath: row.faviconPath ?? null,
                 projectIcon: row.projectIcon ?? null,
                 scripts: row.scripts,
@@ -2374,6 +2391,7 @@ pending_approval_requests AS (
                   defaultModelSelection: row.defaultModelSelection,
                   defaultThreadEnvMode: row.defaultThreadEnvMode,
                   autoPull: row.autoPull === 1,
+                  worktreeRoot: row.worktreeRoot,
                   faviconPath: row.faviconPath ?? null,
                   projectIcon: row.projectIcon ?? null,
                   scripts: row.scripts,
@@ -2925,6 +2943,7 @@ pending_approval_requests AS (
                     defaultModelSelection: option.value.defaultModelSelection,
                     defaultThreadEnvMode: option.value.defaultThreadEnvMode,
                     autoPull: option.value.autoPull === 1,
+                    worktreeRoot: option.value.worktreeRoot,
                     faviconPath: option.value.faviconPath ?? null,
                     projectIcon: option.value.projectIcon ?? null,
                     scripts: option.value.scripts,
@@ -2934,6 +2953,18 @@ pending_approval_requests AS (
                   } satisfies OrchestrationProject),
                 ),
               ),
+        ),
+      );
+
+  const listActiveProjectWorktreeRoots: ProjectionSnapshotQueryShape["listActiveProjectWorktreeRoots"] =
+    () =>
+      listActiveProjectWorktreeRootRows().pipe(
+        Effect.map((rows) => rows.map((row) => row.worktreeRoot)),
+        Effect.mapError(
+          toPersistenceSqlOrDecodeError(
+            "ProjectionSnapshotQuery.listActiveProjectWorktreeRoots:query",
+            "ProjectionSnapshotQuery.listActiveProjectWorktreeRoots:decodeRows",
+          ),
         ),
       );
 
@@ -3643,6 +3674,7 @@ pending_approval_requests AS (
     getCounts,
     getEventReplayStats,
     getActiveProjectByWorkspaceRoot,
+    listActiveProjectWorktreeRoots,
     getProjectShellById,
     getFirstActiveThreadIdByProjectId,
     getImportedAgentSessionSources,
