@@ -114,7 +114,7 @@ describe("CheckpointDiffQuery.layer", () => {
             getThreadDetailById: () => Effect.succeed(Option.none()),
             getThreadDetailSnapshot: () => Effect.succeed(Option.none()),
             searchThreads: () => Effect.succeed({ matches: [] }),
-            listActiveProjectWorktreeRoots: () => Effect.succeed([]),
+            listActiveThreadWorktreePaths: () => Effect.succeed([]),
           }),
         ),
       );
@@ -214,7 +214,7 @@ describe("CheckpointDiffQuery.layer", () => {
             getThreadDetailById: () => Effect.succeed(Option.none()),
             getThreadDetailSnapshot: () => Effect.succeed(Option.none()),
             searchThreads: () => Effect.succeed({ matches: [] }),
-            listActiveProjectWorktreeRoots: () => Effect.succeed([]),
+            listActiveThreadWorktreePaths: () => Effect.succeed([]),
           }),
         ),
       );
@@ -304,7 +304,7 @@ describe("CheckpointDiffQuery.layer", () => {
             getThreadDetailById: () => Effect.succeed(Option.none()),
             getThreadDetailSnapshot: () => Effect.succeed(Option.none()),
             searchThreads: () => Effect.succeed({ matches: [] }),
-            listActiveProjectWorktreeRoots: () => Effect.succeed([]),
+            listActiveThreadWorktreePaths: () => Effect.succeed([]),
           }),
         ),
       );
@@ -379,7 +379,7 @@ describe("CheckpointDiffQuery.layer", () => {
             getThreadDetailById: () => Effect.succeed(Option.none()),
             getThreadDetailSnapshot: () => Effect.succeed(Option.none()),
             searchThreads: () => Effect.succeed({ matches: [] }),
-            listActiveProjectWorktreeRoots: () => Effect.succeed([]),
+            listActiveThreadWorktreePaths: () => Effect.succeed([]),
           }),
         ),
       );
@@ -439,7 +439,7 @@ describe("CheckpointDiffQuery.layer", () => {
             getThreadDetailById: () => Effect.succeed(Option.none()),
             getThreadDetailSnapshot: () => Effect.succeed(Option.none()),
             searchThreads: () => Effect.succeed({ matches: [] }),
-            listActiveProjectWorktreeRoots: () => Effect.succeed([]),
+            listActiveThreadWorktreePaths: () => Effect.succeed([]),
           }),
         ),
       );
