@@ -542,7 +542,9 @@ const makeProjectionSnapshotQuery = Effect.gen(function* () {
       `,
   });
 
-  const listActiveThreadWorktreePathRows = SqlSchema.findAll({
+  // Deliberately not filtered by archived_at: archiving leaves the worktree on
+  // disk and the thread readable, so its diffs have to keep working.
+  const listThreadWorktreePathRows = SqlSchema.findAll({
     Request: Schema.Void,
     Result: Schema.Struct({ worktreePath: Schema.String }),
     execute: () =>
@@ -2956,14 +2958,14 @@ pending_approval_requests AS (
         ),
       );
 
-  const listActiveThreadWorktreePaths: ProjectionSnapshotQueryShape["listActiveThreadWorktreePaths"] =
+  const listThreadWorktreePaths: ProjectionSnapshotQueryShape["listThreadWorktreePaths"] =
     () =>
-      listActiveThreadWorktreePathRows().pipe(
+      listThreadWorktreePathRows().pipe(
         Effect.map((rows) => rows.map((row) => row.worktreePath)),
         Effect.mapError(
           toPersistenceSqlOrDecodeError(
-            "ProjectionSnapshotQuery.listActiveThreadWorktreePaths:query",
-            "ProjectionSnapshotQuery.listActiveThreadWorktreePaths:decodeRows",
+            "ProjectionSnapshotQuery.listThreadWorktreePaths:query",
+            "ProjectionSnapshotQuery.listThreadWorktreePaths:decodeRows",
           ),
         ),
       );
@@ -3674,7 +3676,7 @@ pending_approval_requests AS (
     getCounts,
     getEventReplayStats,
     getActiveProjectByWorkspaceRoot,
-    listActiveThreadWorktreePaths,
+    listThreadWorktreePaths,
     getProjectShellById,
     getFirstActiveThreadIdByProjectId,
     getImportedAgentSessionSources,

@@ -845,7 +845,7 @@ projectionSnapshotLayer("ProjectionSnapshotQuery", (it) => {
     }),
   );
 
-  it.effect("lists recorded worktree paths once, skipping threads without one", () =>
+  it.effect("lists recorded worktree paths once, keeping archived and dropping deleted", () =>
     Effect.gen(function* () {
       const snapshotQuery = yield* ProjectionSnapshotQuery;
       const sql = yield* SqlClient.SqlClient;
@@ -855,7 +855,7 @@ projectionSnapshotLayer("ProjectionSnapshotQuery", (it) => {
       const insertThread = (
         threadId: string,
         worktreePath: string | null,
-        deletedAt: string | null,
+        options: { readonly deletedAt?: string; readonly archivedAt?: string } = {},
       ) => sql`
         INSERT INTO projection_threads (
           thread_id,
@@ -867,7 +867,8 @@ projectionSnapshotLayer("ProjectionSnapshotQuery", (it) => {
           worktree_path,
           created_at,
           updated_at,
-          deleted_at
+          deleted_at,
+          archived_at
         )
         VALUES (
           ${threadId},
@@ -879,23 +880,35 @@ projectionSnapshotLayer("ProjectionSnapshotQuery", (it) => {
           ${worktreePath},
           '2026-01-01T00:00:00.000Z',
           '2026-01-01T00:00:00.000Z',
-          ${deletedAt}
+          ${options.deletedAt ?? null},
+          ${options.archivedAt ?? null}
         )
       `;
 
       // Two threads share a path, one has none, one is deleted: the guard that
-      // consumes this needs each live path exactly once and nothing else.
-      yield* insertThread("thread-a", "/custom/worktrees/feature-a", null);
-      yield* insertThread("thread-b", "/custom/worktrees/feature-a", null);
-      yield* insertThread("thread-c", "/custom/worktrees/feature-c", null);
-      yield* insertThread("thread-d", null, null);
-      yield* insertThread("thread-e", "/custom/worktrees/deleted", "2026-01-01T00:00:00.000Z");
+      // consumes this needs each live path exactly once and nothing else. The
+      // archived one stays in — its worktree is still on disk and still
+      // diffable, so dropping it would blank the diff panel it can reach.
+      yield* insertThread("thread-a", "/custom/worktrees/feature-a");
+      yield* insertThread("thread-b", "/custom/worktrees/feature-a");
+      yield* insertThread("thread-c", "/custom/worktrees/feature-c");
+      yield* insertThread("thread-d", null);
+      yield* insertThread("thread-e", "/custom/worktrees/deleted", {
+        deletedAt: "2026-01-01T00:00:00.000Z",
+      });
+      yield* insertThread("thread-f", "/custom/worktrees/archived", {
+        archivedAt: "2026-01-01T00:00:00.000Z",
+      });
 
-      const paths = yield* snapshotQuery.listActiveThreadWorktreePaths();
+      const paths = yield* snapshotQuery.listThreadWorktreePaths();
 
       assert.deepStrictEqual(
         [...paths].sort(),
-        ["/custom/worktrees/feature-a", "/custom/worktrees/feature-c"],
+        [
+          "/custom/worktrees/archived",
+          "/custom/worktrees/feature-a",
+          "/custom/worktrees/feature-c",
+        ],
       );
     }),
   );

@@ -20,7 +20,7 @@ function makeLayer(input: {
   return ReviewService.layer.pipe(
     Layer.provide(
       Layer.mock(ProjectionSnapshotQuery.ProjectionSnapshotQuery)({
-        listActiveThreadWorktreePaths: () => Effect.succeed(input.threadWorktreePaths ?? []),
+        listThreadWorktreePaths: () => Effect.succeed(input.threadWorktreePaths ?? []),
       }),
     ),
     Layer.provide(

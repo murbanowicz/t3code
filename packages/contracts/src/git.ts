@@ -144,7 +144,9 @@ export const VcsCreateWorktreeInput = Schema.Struct({
   baseRefName: Schema.optional(TrimmedNonEmptyStringSchema),
   path: Schema.NullOr(TrimmedNonEmptyStringSchema),
   /**
-   * Creates the worktree at `<rootDir>/<branch>`. Ignored when `path` is set.
+   * Creates the worktree at `<rootDir>/<branch>`. `path` takes precedence when
+   * both are given, but a malformed root is still rejected rather than quietly
+   * accepted, so callers hear about it at the boundary either way.
    * Absolute only — POSIX, Windows drive or UNC — because a relative root is
    * joined and handed to Git, which would resolve it against the repository
    * being branched from and place the worktree outside any managed location.

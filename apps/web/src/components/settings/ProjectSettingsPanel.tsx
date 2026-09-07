@@ -730,7 +730,8 @@ function ProjectDetail({
         toastManager.add({
           type: "warning",
           title: "Worktree location must be an absolute path",
-          description: "Start it with / or ~/ so it does not depend on where the server runs.",
+          description:
+            "Start it with /, ~/, a drive letter, or \\\\ so it does not depend on where the server runs.",
         });
         return;
       }

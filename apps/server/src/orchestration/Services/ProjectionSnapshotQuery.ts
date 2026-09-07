@@ -160,12 +160,15 @@ export interface ProjectionSnapshotQueryShape {
   ) => Effect.Effect<Option.Option<OrchestrationProject>, ProjectionRepositoryError>;
 
   /**
-   * Every worktree path this server has recorded on a live thread, for callers
-   * that hold only a directory and must tell a managed worktree from any other
-   * path. Recorded paths rather than configured roots, so a worktree stays
-   * recognizable after its project's worktree location changes.
+   * Every worktree path this server has recorded on a thread it has not
+   * deleted, for callers that hold only a directory and must tell a managed
+   * worktree from any other path. Recorded paths rather than configured roots,
+   * so a worktree stays recognizable after its project's worktree location
+   * changes. Archived threads are included on purpose: archiving leaves the
+   * worktree on disk and the thread readable, so filtering them here would
+   * blank their diffs.
    */
-  readonly listActiveThreadWorktreePaths: () => Effect.Effect<
+  readonly listThreadWorktreePaths: () => Effect.Effect<
     ReadonlyArray<string>,
     ProjectionRepositoryError
   >;

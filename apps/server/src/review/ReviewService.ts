@@ -86,7 +86,7 @@ export const make = Effect.gen(function* () {
     // the guard the way a root like `/` would. A failed read honors only the
     // defaults, denying rather than over-permitting.
     const worktreePaths = yield* projectionSnapshotQuery
-      .listActiveThreadWorktreePaths()
+      .listThreadWorktreePaths()
       .pipe(Effect.orElseSucceed((): ReadonlyArray<string> => []));
     for (const worktreePath of worktreePaths) {
       const resolvedWorktree = yield* canonicalizePath(expandHomePathWith(worktreePath, path)).pipe(
