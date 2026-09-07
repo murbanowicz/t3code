@@ -53,5 +53,9 @@ to every way a worktree thread starts, including pull requests opened as threads
 started from mobile. A path the hosting server cannot read as absolute — a Windows path on a
 Linux server, say — is ignored in favor of the default location.
 
+Give each checkout its own location. Two checkouts pointed at the same directory produce the
+same path for the same branch name, and the second worktree fails to be created rather than
+overwriting the first.
+
 Leave the field empty to go back to the default location. Changing it never moves worktrees that
 already exist — they stay where they were created, and their diffs keep working.
